@@ -626,8 +626,15 @@ func (tree Tree) Decrypt(key []byte, cipher Cipher) (string, error) {
 				v = in
 			}
 			if !tree.Metadata.MACOnlyEncrypted || encrypted {
-				// Only add to MAC if not a comment
-				if !isComment {
+				// Only add to MAC if the resulting value is not a comment.
+				// A comment that was successfully decrypted becomes a
+				// non-Comment value here, and it must be added to the MAC
+				// because Encrypt() included it (the plaintext comment is a
+				// non-Comment node at encrypt time). Testing the input's
+				// isComment instead would exclude successfully-decrypted
+				// comments from the MAC, producing a MAC mismatch on files
+				// that contain comments inside sequences (getsops/sops#2243).
+				if _, resultIsComment := v.(Comment); !resultIsComment {
 					bytes, err := ToBytes(v)
 					if err != nil {
 						return nil, fmt.Errorf("Could not convert %s to bytes: %s", in, err)

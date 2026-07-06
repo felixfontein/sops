@@ -56,6 +56,86 @@ func (c encPrefixCipher) Decrypt(value string, key []byte, path string) (plainte
 	return v, nil
 }
 
+// commentCipher models the way the real (AES) cipher records, in the
+// ciphertext's metadata, whether a value was a comment. On Decrypt it uses that
+// metadata to reconstruct a Comment, which is what turns an encrypted
+// non-Comment slice element back into a Comment (see TestMACWithCommentInSequence).
+type commentCipher struct{}
+
+func (c commentCipher) Encrypt(value interface{}, key []byte, path string) (string, error) {
+	if comment, ok := value.(Comment); ok {
+		return "ENC[comment," + comment.Value + "]", nil
+	}
+	b, err := ToBytes(value)
+	if err != nil {
+		return "", err
+	}
+	return "ENC[data," + string(b) + "]", nil
+}
+func (c commentCipher) Decrypt(value string, key []byte, path string) (plaintext interface{}, err error) {
+	body, ok := strings.CutPrefix(value, "ENC[")
+	if !ok {
+		return nil, fmt.Errorf("String not prefixed with 'ENC['")
+	}
+	body, ok = strings.CutSuffix(body, "]")
+	if !ok {
+		return nil, fmt.Errorf("String not suffixed with ']'")
+	}
+	datatype, payload, ok := strings.Cut(body, ",")
+	if !ok {
+		return nil, fmt.Errorf("Missing datatype in %q", value)
+	}
+	if datatype == "comment" {
+		return Comment{Value: payload}, nil
+	}
+	return payload, nil
+}
+
+// TestMACWithCommentInSequence is a regression test for getsops/sops#2243.
+//
+// A comment inside a sequence is a Comment node in the plaintext tree, but
+// Encrypt turns it into an ordinary (non-Comment) string element whose metadata
+// records that it is a comment. When that tree is decrypted again, the string is
+// restored to a Comment. Encrypt excludes the comment from the MAC, so Decrypt
+// must exclude it too — which requires looking at the decrypted result's type,
+// not the (non-Comment) input's type. Before the fix the MACs disagreed and
+// decryption of any file with a comment inside a sequence failed with "MAC
+// mismatch".
+func TestMACWithCommentInSequence(t *testing.T) {
+	branches := TreeBranches{
+		TreeBranch{
+			TreeItem{
+				Key: "list",
+				Value: []interface{}{
+					Comment{Value: "commented"},
+					"real",
+				},
+			},
+		},
+	}
+	tree := Tree{Branches: branches, Metadata: Metadata{}}
+	cipher := commentCipher{}
+	key := bytes.Repeat([]byte{'k'}, 32)
+
+	// Encrypt computes the MAC and mutates the tree in place.
+	encMAC, err := tree.Encrypt(key, cipher)
+	assert.NoError(t, err)
+
+	// The comment inside the sequence must now be an encrypted string element,
+	// exactly as it would be in a file at rest — not a Comment node anymore.
+	seq := tree.Branches[0][0].Value.([]interface{})
+	if _, stillComment := seq[0].(Comment); stillComment {
+		t.Fatalf("expected the sequence comment to be encrypted to a non-Comment string, got %T", seq[0])
+	}
+	assert.IsType(t, "", seq[0])
+
+	// Decrypting the very same tree must reproduce the MAC Encrypt computed.
+	decMAC, err := tree.Decrypt(key, cipher)
+	assert.NoError(t, err)
+
+	assert.Equal(t, encMAC, decMAC)
+}
+
 func TestUnencryptedSuffix(t *testing.T) {
 	branches := TreeBranches{
 		TreeBranch{
