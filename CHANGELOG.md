@@ -1,5 +1,31 @@
 # Changelog
 
+## 3.13.3
+
+Improvements:
+
+* CLI help improvement ([#2239](https://github.com/getsops/sops/pull/2239)).
+* Dependency updates ([#2242](https://github.com/getsops/sops/pull/2242),
+  [#2251](https://github.com/getsops/sops/pull/2251),
+  [#2261](https://github.com/getsops/sops/pull/2261),
+  [#2248](https://github.com/getsops/sops/pull/2248)).
+
+Bugfixes:
+
+* Fix a bug introduced in 3.13.2 that computes a wrong MAC during decryption
+  for sequences (YAML lists) that contain a comment
+  ([#2245](https://github.com/getsops/sops/pull/2245)).
+* Fix ``completion`` subcommands so that they do not have an empty line before
+  the shebang ([#2253](https://github.com/getsops/sops/pull/2253)).
+
+Project changes:
+
+* CI dependency updates ([#2241](https://github.com/getsops/sops/pull/2241),
+  [#2250](https://github.com/getsops/sops/pull/2250),
+  [#2260](https://github.com/getsops/sops/pull/2260)).
+* Rust dependency updates for functional tests
+  ([#2259](https://github.com/getsops/sops/pull/2259)).
+
 ## 3.13.2
 
 Improvements:
