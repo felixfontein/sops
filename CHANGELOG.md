@@ -30,14 +30,14 @@ Project changes:
 
 Improvements:
 
-* Dependency updates ([#2185](https://github.com/getsops/sops/pull/2185)),
-  ([#2193](https://github.com/getsops/sops/pull/2193)),
-  ([#2197](https://github.com/getsops/sops/pull/2197)),
-  ([#2212](https://github.com/getsops/sops/pull/2212)),
-  ([#2218](https://github.com/getsops/sops/pull/2218)),
-  ([#2229](https://github.com/getsops/sops/pull/2229)),
-  ([#2231](https://github.com/getsops/sops/pull/2231)),
-  ([#2231](https://github.com/getsops/sops/pull/2233)).
+* Dependency updates ([#2185](https://github.com/getsops/sops/pull/2185),
+  [#2193](https://github.com/getsops/sops/pull/2193),
+  [#2197](https://github.com/getsops/sops/pull/2197),
+  [#2212](https://github.com/getsops/sops/pull/2212),
+  [#2218](https://github.com/getsops/sops/pull/2218),
+  [#2229](https://github.com/getsops/sops/pull/2229),
+  [#2231](https://github.com/getsops/sops/pull/2231),
+  [#2231](https://github.com/getsops/sops/pull/2233)).
 * Fix typos in documentation
   ([#2221](https://github.com/getsops/sops/pull/2221)).
 
@@ -62,12 +62,12 @@ Bugfixes:
 
 Project changes:
 
-* CI dependency updates ([#2184](https://github.com/getsops/sops/pull/2184)),
-  ([#2192](https://github.com/getsops/sops/pull/2192)),
-  ([#2196](https://github.com/getsops/sops/pull/2196)),
-  ([#2211](https://github.com/getsops/sops/pull/2211)),
-  ([#2228](https://github.com/getsops/sops/pull/2228)),
-  ([#2236](https://github.com/getsops/sops/pull/2236)).
+* CI dependency updates ([#2184](https://github.com/getsops/sops/pull/2184),
+  [#2192](https://github.com/getsops/sops/pull/2192),
+  [#2196](https://github.com/getsops/sops/pull/2196),
+  [#2211](https://github.com/getsops/sops/pull/2211),
+  [#2228](https://github.com/getsops/sops/pull/2228),
+  [#2236](https://github.com/getsops/sops/pull/2236)).
 * Rust dependency updates for functional tests
   ([#2191](https://github.com/getsops/sops/pull/2191)).
 * Build alpine container in CI
